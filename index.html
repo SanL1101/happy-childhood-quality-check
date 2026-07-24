@@ -919,11 +919,10 @@ function init() {
   renderSidebar();
   renderSections();
   renderFinalQuiz();
-  navigateTo(0);
+  loadProgress();
   setupQuizListeners();
   startTimer();
   loadNotes();
-  loadProgress();
 }
 
 function renderSidebar() {
@@ -1250,7 +1249,8 @@ function saveProgress() {
   const state = {
     completedSections: [...completedSections],
     quiz1Answered, quiz2Answered, quiz3Answered, quiz3Score, quiz4Answered,
-    finalExamSubmitted, finalExamScore, finalExamSelections
+    finalExamSubmitted, finalExamScore, finalExamSelections,
+    currentSection
   };
   localStorage.setItem(LS_PREFIX + '_progress', JSON.stringify(state));
 }
@@ -1266,12 +1266,17 @@ function loadProgress() {
       quiz4Answered = saved.quiz4Answered || false;
       finalExamSubmitted = saved.finalExamSubmitted || false; finalExamScore = saved.finalExamScore || 0;
       finalExamSelections = saved.finalExamSelections || {};
+      if (saved.currentSection !== undefined) currentSection = saved.currentSection;
       updateProgress();
       updateSidebarLocks();
       // Restore quiz visuals
       restoreQuizVisuals();
       // Restore final exam visuals if submitted
       if (finalExamSubmitted) restoreFinalExamVisuals();
+      // Navigate to last section
+      if (saved.currentSection !== undefined && saved.currentSection > 0) {
+        setTimeout(() => navigateTo(saved.currentSection), 100);
+      }
     }
   } catch (e) {}
 }

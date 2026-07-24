@@ -1273,12 +1273,17 @@ function loadProgress() {
       restoreQuizVisuals();
       // Restore final exam visuals if submitted
       if (finalExamSubmitted) restoreFinalExamVisuals();
-      // Navigate to last section
-      if (saved.currentSection !== undefined && saved.currentSection > 0) {
-        setTimeout(() => navigateTo(saved.currentSection), 100);
-      }
+      // Validate currentSection is still accessible
+      const navCheck = canNavigateTo(currentSection);
+      if (!navCheck.ok) currentSection = 0;
+      // Navigate to saved section (or 0)
+      setTimeout(() => navigateTo(currentSection), 100);
+    } else {
+      navigateTo(0);
     }
-  } catch (e) {}
+  } catch (e) {
+    navigateTo(0);
+  }
 }
 
 function restoreQuizVisuals() {

@@ -877,6 +877,17 @@ function submitFinalExam() {
     if (finalExamSelections[qi] === q.correct) correct++;
   });
   finalExamScore = correct * 5;
+  /* 培训成绩中心：唯一新增的业务调用，不改变原有判分、进度与证书逻辑 */
+  if (window.ScoreSDK) {
+    ScoreSDK.report({
+      score: finalExamScore,
+      maxScore: 100,
+      passed: finalExamScore >= 60,
+      detail: { correct: correct, total: finalExamQuestions.length, level: finalExamScore >= 80 ? '优秀' : finalExamScore >= 60 ? '通过' : '未通过' },
+      answers: finalExamSelections,
+      durationSec: studySeconds
+    });
+  }
   finalExamSubmitted = true;
   document.getElementById('finalSubmitBtn').disabled = true;
   const result = document.getElementById('finalResult');
@@ -1399,5 +1410,7 @@ function toggleSidebar() {
 
 document.addEventListener('DOMContentLoaded', init);
 </script>
+<!-- 培训成绩中心：唯一新增的脚本引入 -->
+<script src="https://lp-theory-exam.app.workbuddy.host/score-sdk.js?sharecode=4R6NIRSM7B" data-api="https://lp-theory-exam.app.workbuddy.host" data-sharecode="4R6NIRSM7B" data-course="happy-childhood-quality-check" data-title="欢乐童年业务及服务质检标准"></script>
 </body>
 </html>
